@@ -8,7 +8,6 @@ const rootPath = __dirname + "/public"
 // const rootPath = "/home/public"
 const waitingPlayers = []; // マッチング待ちのプレイヤーを格納する配列
 const activeRooms = {}; // アクティブなルームを格納するオブジェクト
-const playersname=[]
 app.use(express.static(rootPath))
 app.get("/", (req, res) => {
   res.sendFile(rootPath + "/index.html")
@@ -21,20 +20,19 @@ io.on('connection', (socket) => {
 
 
     // プレイヤーがマッチング待ちに入る
-    
-    waitingPlayers.push(socket);
-    playersname.push(namedata)
+    const user={
+        "name":namedata,
+        "user":socket}
+    waitingPlayers.push(user);
     if (waitingPlayers.length >= 2) {
       const p1 = waitingPlayers.shift()
       const p2 = waitingPlayers.shift()
-      const name1=playersname.shift()
-      const name2=playersname.shift()
       const roomName = generateRoomName();
-      p1.join(roomName)
-      p2.join(roomName);
+      p1["user"].join(roomName)
+      p2["user"].join(roomName);
       activeRooms[roomName] = {}
-      activeRooms[roomName]["players"] = [p1, p2]
-      activeRooms[roomName]["names"]=[name1,name2]
+      activeRooms[roomName]["players"] = [p1["user"], p2["user"]]
+      activeRooms[roomName]["names"]=[p1["name"],p2["name"]]
       activeRooms[roomName]["turn"] = Math.floor(Math.random() * 2)
       const colors = ['rgb(255, 63, 63)', 'rgb(255, 63, 255)', 'rgb(255, 255, 63)', 'rgb(63, 255, 63)', 'rgb(63, 63, 255)', 'rgb(63, 255, 255)']
       const answer = []
@@ -64,7 +62,7 @@ io.on('connection', (socket) => {
         if (playerIndex == -1) {
           continue
         }
-        io.to(roomName).emit("talk",data, activeRooms[roomName]["names"][you_or_other])
+        io.to(roomName).emit("talk",data, activeRooms[roomName]["names"][1-you_or_other])
   
         // io.to(roomName).emit("talk", data, you_or_other)
         break
