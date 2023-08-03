@@ -42,23 +42,23 @@ io.on('connection', (socket) => {
     io.to(roomName).emit("msg", "マッチング成功")
     const parentPlayer = activeRooms[roomName]["players"][activeRooms[roomName]["turn"]]
     const anotherPlayer = activeRooms[roomName]["players"][(1 - activeRooms[roomName]["turn"])]
-    parentPlayer.emit("msg", "あなたが先行です",1)
-    anotherPlayer.emit("msg", "あなたが後攻です",0)
+    parentPlayer.emit("msg", "あなたが先行です", 1)
+    anotherPlayer.emit("msg", "あなたが後攻です", 0)
     parentPlayer.emit("turnCount", 1)
     anotherPlayer.emit("turnCount", 0)
   }
-  socket.on("msg", (data,you_or_other) => {
+  socket.on("msg", (data, you_or_other) => {
     for (const roomName in activeRooms) {
       const roomPlayers = activeRooms[roomName]["players"]
-      const perent=roomPlayers[activeRooms[roomName]["turn"]]
-      const another=roomPlayers[1-activeRooms[roomName]["turn"]]
+      const perent = roomPlayers[activeRooms[roomName]["turn"]]
+      const another = roomPlayers[1 - activeRooms[roomName]["turn"]]
       const playerIndex = roomPlayers.indexOf(socket);
       if (playerIndex == -1) {
         continue
       }
       // perent.emit("talk",data,1)
       // another.emit("talk",data,0)
-      io.to(roomName).emit("talk", data,you_or_other)
+      io.to(roomName).emit("talk", data, you_or_other)
       break
     }
   })
@@ -72,8 +72,8 @@ io.on('connection', (socket) => {
       activeRooms[roomName]["turn"] = 1 - activeRooms[roomName]["turn"]
       const pPlayer = activeRooms[roomName]["players"][activeRooms[roomName]["turn"]]
       const aPlayer = activeRooms[roomName]["players"][(1 - activeRooms[roomName]["turn"])]
-      pPlayer.emit("turnCount", 1)
-      aPlayer.emit("turnCount", 0)
+        pPlayer.emit("turnCount", 1)
+        aPlayer.emit("turnCount", 0)
       break
     }
   })
@@ -117,6 +117,18 @@ io.on('connection', (socket) => {
 
 
   })
+  socket.on("draw", (data) => {
+    for (const roomName in activeRooms) {
+      let anscopy = activeRooms[roomName]["answer"].concat()
+      const roomPlayers = activeRooms[roomName]["players"]
+      const playerIndex = roomPlayers.indexOf(socket);
+      if (playerIndex == -1) {
+        continue
+      }
+      io.to(roomName).emit("v-or-d","DRAW")
+      io.to(roomName).emit("bingo", anscopy)
+    }
+  })
   socket.on("bingo", (data) => {
     for (const roomName in activeRooms) {
       let anscopy = activeRooms[roomName]["answer"].concat()
@@ -125,8 +137,8 @@ io.on('connection', (socket) => {
       if (playerIndex == -1) {
         continue
       }
-      activeRooms[roomName]["players"][1-activeRooms[roomName]["turn"]].emit("v-or-d","YOUWIN")
-      activeRooms[roomName]["players"][activeRooms[roomName]["turn"]].emit("v-or-d","YOULOSE")
+      activeRooms[roomName]["players"][1 - activeRooms[roomName]["turn"]].emit("v-or-d", "YOUWIN")
+      activeRooms[roomName]["players"][activeRooms[roomName]["turn"]].emit("v-or-d", "YOULOSE")
       io.to(roomName).emit("bingo", anscopy)
     }
   })
