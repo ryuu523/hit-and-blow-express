@@ -2,6 +2,11 @@ const socket = io()
 const colors = ['rgb(255, 63, 63)', 'rgb(255, 63, 255)', 'rgb(255, 255, 63)', 'rgb(63, 255, 63)', 'rgb(63, 63, 255)', 'rgb(63, 255, 255)']
 const txt = document.getElementById("txt")
 const btn2 = document.getElementById("btn2")
+const namebtn= document.getElementById("namebtn")
+const username=document.getElementById("name")
+const namep=document.getElementById("namep")
+const start = document.querySelector('.start')
+const games = document.querySelector('.games')
 const colorpalet = document.querySelector('.colorpalet')
 const ballslast = document.querySelector('.ballslast')
 const boxslast = document.querySelector('.boxslast')
@@ -19,6 +24,7 @@ let colorselement
 let resetcount = 0
 let you_or_other
 //時間置くやつ
+
 async function wait(ms) {
     return new Promise(resolve => {
         setTimeout(() => {
@@ -26,7 +32,18 @@ async function wait(ms) {
         }, ms)
     })
 }
+//スタート時の名前決め
+namebtn.addEventListener("click",()=>{
+    if(username.value==""||username.value.length>5){
+        namep.textContent="５文字以内１文字以上にしてください"
+        return
+    }
+    start.style.display="none"
+    games.style.display="block"
+    socket.emit("start",username.value)
 
+
+})
 //イニシャライズ
 function init() {
     turn = -1
@@ -118,12 +135,8 @@ socket.on("msg", (data,id) => {
 socket.on("talk", (data,id) => {
     // console.log(id);
     const p = document.createElement("p")
-    if(you_or_other==id){
-        data="you:"+data
-    }
-    else{
-        data="enemy:"+data
-    }
+    data=id+":"+data
+    
     p.textContent = data
     talkarea.appendChild(p)
 })
