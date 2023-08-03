@@ -61,6 +61,9 @@ colors.forEach((color, index) => {
 //チャット打つところ
 txt.addEventListener("keydown", (e) => {
     if (e.key == "Enter") {
+        if (txt.value == "") {
+            return
+        }
         socket.emit("msg", txt.value,you_or_other)
         txt.value = ""
     }
