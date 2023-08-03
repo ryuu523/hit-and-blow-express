@@ -97,6 +97,7 @@ socket.on("turnCount", (data) => {
         turnflag = true
         turn++
     }
+    
 
 })
 //マッチング成功の文字生成
@@ -107,12 +108,12 @@ socket.on("msg", (data,id) => {
     p.style.fontWeight = "bold"
     talkarea.appendChild(p)
     you_or_other=id
-    console.log(id);
+    // console.log(id);
 
 })
 //チャット
 socket.on("talk", (data,id) => {
-    console.log(id);
+    // console.log(id);
     const p = document.createElement("p")
     if(you_or_other==id){
         data="you:"+data
@@ -147,6 +148,11 @@ socket.on("hitblow", (hitnum, blownum) => {
         bnum++
     }
     blowhitdraw(hnum, bnum)
+    if(turn==8){
+        socket.emit("draw")
+        turntext.textContent = "DRAW"
+        turnflag = false
+    }
 })
 socket.on("bingo", (data) => {
     let el = document.getElementsByClassName("balllast")
@@ -174,7 +180,7 @@ async function blowhitdraw(h, b) {
     hb.classList.remove("hide")
     await wait(2000)
     hb.classList.add("hide")
-
+    
 
 }
 //丸を塗ってOKボタン出す系の処理
@@ -205,6 +211,7 @@ async function OK() {
     btn.forEach(b => {
         b.classList.add('hide')
     })
+    // console.log(turn);
     socket.emit("nextturn")
     let ballsColor = Array.from(document.querySelectorAll("#b" + (turn + 1) + ">.balls>.ball"))
     let arraycolors = []
