@@ -2,11 +2,6 @@ const socket = io()
 const colors = ['rgb(255, 63, 63)', 'rgb(255, 63, 255)', 'rgb(255, 255, 63)', 'rgb(63, 255, 63)', 'rgb(63, 63, 255)', 'rgb(63, 255, 255)']
 const txt = document.getElementById("txt")
 const btn2 = document.getElementById("btn2")
-const namebtn= document.getElementById("namebtn")
-const username=document.getElementById("name")
-const namep=document.getElementById("namep")
-const start = document.querySelector('.start')
-const games = document.querySelector('.games')
 const colorpalet = document.querySelector('.colorpalet')
 const ballslast = document.querySelector('.ballslast')
 const boxslast = document.querySelector('.boxslast')
@@ -24,7 +19,6 @@ let colorselement
 let resetcount = 0
 let you_or_other
 //時間置くやつ
-
 async function wait(ms) {
     return new Promise(resolve => {
         setTimeout(() => {
@@ -32,18 +26,7 @@ async function wait(ms) {
         }, ms)
     })
 }
-//スタート時の名前決め
-namebtn.addEventListener("click",()=>{
-    if(username.value==""||username.value.length>5){
-        namep.textContent="５文字以内１文字以上にしてください"
-        return
-    }
-    start.style.display="none"
-    games.style.display="block"
-    socket.emit("start",username.value)
 
-
-})
 //イニシャライズ
 function init() {
     turn = -1
@@ -78,9 +61,6 @@ colors.forEach((color, index) => {
 //チャット打つところ
 txt.addEventListener("keydown", (e) => {
     if (e.key == "Enter") {
-        if (txt.value == "") {
-            return
-        }
         socket.emit("msg", txt.value,you_or_other)
         txt.value = ""
     }
@@ -117,7 +97,6 @@ socket.on("turnCount", (data) => {
         turnflag = true
         turn++
     }
-    
 
 })
 //マッチング成功の文字生成
@@ -128,15 +107,19 @@ socket.on("msg", (data,id) => {
     p.style.fontWeight = "bold"
     talkarea.appendChild(p)
     you_or_other=id
-    // console.log(id);
+    console.log(id);
 
 })
 //チャット
 socket.on("talk", (data,id) => {
-    // console.log(id);
+    console.log(id);
     const p = document.createElement("p")
-    data=id+":"+data
-    
+    if(you_or_other==id){
+        data="you:"+data
+    }
+    else{
+        data="enemy:"+data
+    }
     p.textContent = data
     talkarea.appendChild(p)
 })
@@ -164,11 +147,6 @@ socket.on("hitblow", (hitnum, blownum) => {
         bnum++
     }
     blowhitdraw(hnum, bnum)
-    if(turn==8){
-        socket.emit("draw")
-        turntext.textContent = "DRAW"
-        turnflag = false
-    }
 })
 socket.on("bingo", (data) => {
     let el = document.getElementsByClassName("balllast")
@@ -196,7 +174,7 @@ async function blowhitdraw(h, b) {
     hb.classList.remove("hide")
     await wait(2000)
     hb.classList.add("hide")
-    
+
 
 }
 //丸を塗ってOKボタン出す系の処理
@@ -227,7 +205,6 @@ async function OK() {
     btn.forEach(b => {
         b.classList.add('hide')
     })
-    // console.log(turn);
     socket.emit("nextturn")
     let ballsColor = Array.from(document.querySelectorAll("#b" + (turn + 1) + ">.balls>.ball"))
     let arraycolors = []
