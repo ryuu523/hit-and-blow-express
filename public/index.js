@@ -16,6 +16,7 @@ const hb = document.querySelector('.hb')
 const turntext = document.querySelector(".turntext")
 const _sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const talkarea = document.querySelector(".talkarea")
+const textarea = document.querySelector(".textarea")
 let tokendata
 let colorNum
 let turnflag
@@ -46,6 +47,7 @@ namebtn.addEventListener("click",()=>{
     }
     start.style.display="none"
     games.style.display="block"
+    textarea.style.display="block"
     socket.emit("start",username.value,tokendata)
 
 
@@ -99,6 +101,11 @@ btn2.addEventListener("click", () => {
     socket.emit("msg", txt.value,tokendata)
     txt.value = ""
 })
+function autoscroll(){
+    let  talk=document.querySelector(".talkarea")
+    let talkAreaHeight = talk.scrollHeight;
+    talk.scrollTop = talkAreaHeight;
+}
 //切断された時の処理
 socket.on("break", (data) => {
     reset()
@@ -146,6 +153,7 @@ socket.on("talk", (data,id) => {
     
     p.textContent = data
     talkarea.appendChild(p)
+    autoscroll()
 })
 socket.on("colordata", (data) => {
     data.forEach((color, index) => {
