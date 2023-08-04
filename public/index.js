@@ -48,7 +48,10 @@ namebtn.addEventListener("click",()=>{
     start.style.display="none"
     games.style.display="block"
     textarea.style.display="block"
-    socket.emit("start",username.value,tokendata)
+    setTimeout(()=>{
+        socket.emit("start",username.value,tokendata)
+    },3000)
+    
 
 
 })

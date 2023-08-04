@@ -27,10 +27,10 @@ io.on('connection', (socket) => {
   // console.log(users);
   //トークン配布
   io.to(socket.id).emit("token", socket.id)
-  console.log("入る前users");
-  console.log(users);
+  // console.log("入る前users");
+  // console.log(users);
   socket.on("start", (namedata, tokenid) => {
-    console.log(tokenid+"がgameに入りました");
+    // console.log(tokenid+"がgameに入りました");
     // プレイヤーがマッチング待ちに入る
     // console.log(tokenid);
     users.forEach((user, index) => {
@@ -42,15 +42,15 @@ io.on('connection', (socket) => {
         waitingPlayers.push(b[0])
         // console.log(index)
         // console.log(b);
-        console.log("入った後users");
-        console.log(users);
+        // console.log("入った後users");
+        // console.log(users);
         // // waitingPlayers.push()
         // console.log(waitingPlayers);
       }
     })
-    console.log("waitingPlayers");
-    console.log(waitingPlayers);
-    console.log(waitingPlayers.length);
+    // console.log("waitingPlayers");
+    // console.log(waitingPlayers);
+    // console.log(waitingPlayers.length);
     if (waitingPlayers.length >= 2) {
       const p1 = waitingPlayers.shift()
       const p2 = waitingPlayers.shift()
