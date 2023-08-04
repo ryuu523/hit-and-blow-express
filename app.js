@@ -10,7 +10,7 @@ const rootPath = __dirname + "/public"
 const waitingPlayers = []; // マッチング待ちのプレイヤーを格納する配列
 const activeRooms = {}; // アクティブなルームを格納するオブジェクト
 const users = []
-const nowusers=[]
+const nowusers = []
 app.use(express.static(rootPath))
 app.get("/", (req, res) => {
   res.sendFile(rootPath + "/index.html")
@@ -27,10 +27,10 @@ io.on('connection', (socket) => {
   // console.log(users);
   //トークン配布
   io.to(socket.id).emit("token", socket.id)
-  console.log("入る前users");
-  console.log(users);
+  // console.log("入る前users");
+  // console.log(users);
   socket.on("start", (namedata, tokenid) => {
-    console.log(tokenid+"がgameに入りました");
+    // console.log(tokenid+"がgameに入りました");
     // プレイヤーがマッチング待ちに入る
     // console.log(tokenid);
     users.forEach((user, index) => {
@@ -38,52 +38,54 @@ io.on('connection', (socket) => {
       if (user["user"]["id"] == tokenid) {
         users[index]["name"] = namedata
         nowusers.splice(index)
-        const b = users.splice(index,1)
+        const b = users.splice(index, 1)
         waitingPlayers.push(b[0])
         // console.log(index)
         // console.log(b);
-        console.log("入った後users");
-        console.log(users);
+        // console.log("入った後users");
+        // console.log(users);
         // // waitingPlayers.push()
         // console.log(waitingPlayers);
       }
     })
-    console.log("waitingPlayers");
-    console.log(waitingPlayers);
-    console.log(waitingPlayers.length);
-    if (waitingPlayers.length >= 2) {
-      const p1 = waitingPlayers.shift()
-      const p2 = waitingPlayers.shift()
-      console.log("マッチング後waitingPlayers");
-      const roomName = generateRoomName();
-      // console.log(p1);
-      // console.log(p2);
-      p1["user"].join(roomName)
-      p2["user"].join(roomName);
-      activeRooms[roomName] = {}
-      activeRooms[roomName]["users"]=[p1,p2]
-      activeRooms[roomName]["players"] = [p1["user"], p2["user"]]
-      activeRooms[roomName]["names"] = [p1["name"], p2["name"]]
-      activeRooms[roomName]["turn"] = Math.floor(Math.random() * 2)
-      const colors = ['rgb(255, 63, 63)', 'rgb(255, 63, 255)', 'rgb(255, 255, 63)', 'rgb(63, 255, 63)', 'rgb(63, 63, 255)', 'rgb(63, 255, 255)']
-      const answer = []
-      // activeRooms[roomName]["rand"] = [String(Math.floor(Math.random() * 10)), String(Math.floor(Math.random() * 10)), String(Math.floor(Math.random() * 10)), String(Math.floor(Math.random() * 10))]
+    // console.log("waitingPlayers");
+    // console.log(waitingPlayers);
+    // console.log(waitingPlayers.length);
+    setTimeout(() => {
+      if (waitingPlayers.length >= 2) {
+        const p1 = waitingPlayers.shift()
+        const p2 = waitingPlayers.shift()
+        // console.log("マッチング後waitingPlayers");
+        const roomName = generateRoomName();
+        // console.log(p1);
+        // console.log(p2);
+        p1["user"].join(roomName)
+        p2["user"].join(roomName);
+        activeRooms[roomName] = {}
+        activeRooms[roomName]["users"] = [p1, p2]
+        activeRooms[roomName]["players"] = [p1["user"], p2["user"]]
+        activeRooms[roomName]["names"] = [p1["name"], p2["name"]]
+        activeRooms[roomName]["turn"] = Math.floor(Math.random() * 2)
+        const colors = ['rgb(255, 63, 63)', 'rgb(255, 63, 255)', 'rgb(255, 255, 63)', 'rgb(63, 255, 63)', 'rgb(63, 63, 255)', 'rgb(63, 255, 255)']
+        const answer = []
+        // activeRooms[roomName]["rand"] = [String(Math.floor(Math.random() * 10)), String(Math.floor(Math.random() * 10)), String(Math.floor(Math.random() * 10)), String(Math.floor(Math.random() * 10))]
 
 
-      for (let i = 0; i < 4; i++) {
-        answer.push(colors[Math.floor(Math.random() * colors.length)])
+        for (let i = 0; i < 4; i++) {
+          answer.push(colors[Math.floor(Math.random() * colors.length)])
+        }
+        console.log(answer);
+        activeRooms[roomName]["answer"] = answer
+        console.log("マッチング成功:" + roomName);
+        io.to(roomName).emit("msg", "マッチング成功")
+        const parentPlayer = activeRooms[roomName]["players"][activeRooms[roomName]["turn"]]
+        const anotherPlayer = activeRooms[roomName]["players"][(1 - activeRooms[roomName]["turn"])]
+        parentPlayer.emit("msg", "あなたが先行です", 1)
+        anotherPlayer.emit("msg", "あなたが後攻です", 0)
+        parentPlayer.emit("turnCount", 1)
+        anotherPlayer.emit("turnCount", 0)
       }
-      console.log(answer);
-      activeRooms[roomName]["answer"] = answer
-      console.log("マッチング成功:" + roomName);
-      io.to(roomName).emit("msg", "マッチング成功")
-      const parentPlayer = activeRooms[roomName]["players"][activeRooms[roomName]["turn"]]
-      const anotherPlayer = activeRooms[roomName]["players"][(1 - activeRooms[roomName]["turn"])]
-      parentPlayer.emit("msg", "あなたが先行です", 1)
-      anotherPlayer.emit("msg", "あなたが後攻です", 0)
-      parentPlayer.emit("turnCount", 1)
-      anotherPlayer.emit("turnCount", 0)
-    }
+    }, 1000)
     socket.on("msg", (data, tokendata) => {
       for (const roomName in activeRooms) {
         const roomPlayers = activeRooms[roomName]["players"]
@@ -91,12 +93,12 @@ io.on('connection', (socket) => {
         if (playerIndex == -1) {
           continue
         }
-        roomPlayers.forEach((p,index)=>{
-          if(p["id"]==tokendata){
+        roomPlayers.forEach((p, index) => {
+          if (p["id"] == tokendata) {
             io.to(roomName).emit("talk", data, activeRooms[roomName]["names"][index])
           }
         })
-        
+
 
         // io.to(roomName).emit("talk", data, you_or_other)
         break
@@ -188,7 +190,7 @@ io.on('connection', (socket) => {
       const index = waitingPlayers.indexOf(socket);
       // console.log(index);
       if (index !== -1) {
-        
+
         waitingPlayers.splice(index, 1);
       }
 
@@ -210,7 +212,7 @@ io.on('connection', (socket) => {
           break;
         }
       }
-      
+
       console.log('ユーザーが切断しました');
       console.log(waitingPlayers);
     });
@@ -225,7 +227,7 @@ io.on('connection', (socket) => {
     if (index !== -1) {
       nowusers.splice(index, 1);
     }
-    console.log(">>"+nowusers);
+    console.log(">>" + nowusers);
   })
 })
 http.listen(3000, () => {
