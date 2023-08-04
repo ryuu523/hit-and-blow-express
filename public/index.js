@@ -48,10 +48,16 @@ namebtn.addEventListener("click",()=>{
     start.style.display="none"
     games.style.display="block"
     textarea.style.display="block"
+    const b = document.createElement("p")
+    b.textContent = "マッチング待機中です..."
+    b.style.color = "blue"
+    b.style.fontWeight = "bold"
+    talkarea.appendChild(b)
     socket.emit("start",username.value,tokendata)
     setTimeout(()=>{
         socket.emit("start",username.value,tokendata)
     },3000)
+    
     
 
 
@@ -121,7 +127,11 @@ socket.on("break", (data) => {
     p.textContent = "切断されました"
     p.style.color = "blue"
     p.style.fontWeight = "bold"
-    talkarea.appendChild(p)
+    const b = document.createElement("p")
+    b.textContent = "マッチング待機中です..."
+    b.style.color = "blue"
+    b.style.fontWeight = "bold"
+    talkarea.appendChild(b)
 })
 //ターン切り替え
 socket.on("turnCount", (data) => {
