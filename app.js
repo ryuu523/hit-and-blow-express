@@ -27,6 +27,7 @@ io.on('connection', (socket) => {
   // console.log(users);
   //トークン配布
   io.to(socket.id).emit("token", socket.id)
+  console.log("入る前users");
   console.log(users);
   socket.on("start", (namedata, tokenid) => {
     console.log(tokenid+"がgameに入りました");
@@ -37,20 +38,23 @@ io.on('connection', (socket) => {
       if (user["user"]["id"] == tokenid) {
         users[index]["name"] = namedata
         nowusers.splice(index)
-        const b = users.splice(index)
+        const b = users.splice(index,1)
         waitingPlayers.push(b[0])
         // console.log(index)
         // console.log(b);
-        // console.log(users);
+        console.log("入った後users");
+        console.log(users);
         // // waitingPlayers.push()
         // console.log(waitingPlayers);
       }
     })
+    console.log("waitingPlayers");
     console.log(waitingPlayers);
     console.log(waitingPlayers.length);
     if (waitingPlayers.length >= 2) {
       const p1 = waitingPlayers.shift()
       const p2 = waitingPlayers.shift()
+      console.log("マッチング後waitingPlayers");
       const roomName = generateRoomName();
       // console.log(p1);
       // console.log(p2);
