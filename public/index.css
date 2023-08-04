@@ -293,7 +293,7 @@ body {
 .talkarea {
     
     padding: 10px;
-    width: 300px;
+    width: 250px;
     height: 600px;
     overflow-x: hidden;
     overflow-y: auto;
@@ -302,7 +302,7 @@ body {
 #txt{
     line-height: 50px;
     font-size: 30px;
-    width:250px;
+    width:200px;
     height:50px;
 }
 #btn2{
